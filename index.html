@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>法考主观题答题系统</title>
+<style>
+  :root {
+    --top: #61abe8;
+    --side: #ddebF6;
+    --panel: #f9fdff;
+    --soft: #e3f0f9;
+    --line: #9fc7e8;
+    --deep: #1d4f7a;
+    --text: #333;
+    --muted: #5f7690;
+    --orange: #ffc000;
+    --orange-deep: #d89e00;
+    --danger: #c93d3d;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; color: var(--text); background: var(--panel); overflow: hidden; }
+  button, input, textarea { font: inherit; }
+  button { cursor: pointer; }
+  body:not(.unlocked) .app { display: none; }
+  .lock-screen { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: linear-gradient(135deg, #61abe8, #ddebF6); }
+  body.unlocked .lock-screen { display: none; }
+  .lock-card { width: min(430px, 100%); padding: 34px 32px 30px; border: 1px solid #9fc7e8; border-radius: 8px; background: rgba(249,253,255,.97); box-shadow: 0 16px 45px rgba(25,74,112,.22); text-align: center; }
+  .lock-card h2 { margin: 0 0 9px; color: #1d4f7a; font-size: 24px; }
+  .lock-card p { margin: 0 0 18px; color: #5f7690; }
+  .lock-input { width: 100%; padding: 12px 13px; border: 1px solid #9fc7e8; border-radius: 4px; outline: none; font-size: 16px; text-align: center; }
+  .lock-input:focus { border-color: #4d90c5; box-shadow: 0 0 0 3px rgba(77,144,197,.15); }
+  .unlock-btn { width: 100%; margin-top: 12px; padding: 11px; border: 1px solid #dfa900; border-radius: 4px; color: #644800; background: linear-gradient(#ffe28a, #ffc000); font-size: 16px; font-weight: 800; }
+  .lock-message { min-height: 22px; margin-top: 10px; color: #c93d3d; font-size: 13px; }
+  .lock-note { margin: 13px 0 0 !important; color: #7990a4 !important; font-size: 12px; }
+  .app { height: 100vh; display: flex; flex-direction: column; }
+  .topbar { flex: 0 0 88px; display: grid; grid-template-columns: 300px 1fr auto; align-items: center; gap: 18px; padding: 12px 18px; color: white; background: linear-gradient(180deg, #69b3ec 0%, var(--top) 100%); border-bottom: 2px solid #4f95cf; }
+  .profile { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .avatar { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 50%; display: grid; place-items: center; color: #2d6694; font-size: 22px; font-weight: 800; background: #e7f4ff; border: 2px solid rgba(255,255,255,.85); }
+  .profile-fields { min-width: 0; display: grid; gap: 4px; }
+  .profile-input { width: 170px; border: 0; outline: 0; color: white; background: transparent; font-weight: 700; font-size: 16px; padding: 0; }
+  .profile-input::placeholder { color: rgba(255,255,255,.8); }
+  .profile-input:focus { border-bottom: 1px solid rgba(255,255,255,.8); }
+  .brand { text-align: center; min-width: 0; }
+  .brand h1 { font-size: 18px; margin: 0 0 5px; font-weight: 800; letter-spacing: .04em; }
+  .brand p { font-size: 13px; margin: 0; opacity: .98; }
+  .top-actions { display: flex; align-items: center; gap: 8px; }
+  .top-btn, .tool-btn { border: 1px solid #8dbbe2; color: #1f4f76; background: linear-gradient(#fff, #e8f3fc); padding: 7px 12px; border-radius: 2px; box-shadow: 0 1px 2px rgba(25,74,112,.15); white-space: nowrap; }
+  .top-btn:hover, .tool-btn:hover { filter: brightness(.97); border-color: #5c9bd0; }
+  .top-btn.primary { color: #704d00; border-color: #e4ad0b; background: linear-gradient(#ffe27d, var(--orange)); font-weight: 700; }
+  .workspace { min-height: 0; flex: 1; display: grid; grid-template-columns: 285px minmax(0, 1fr); }
+  .sidebar { min-height: 0; display: flex; flex-direction: column; background: var(--side); border-right: 1px solid #b4d1e8; }
+  .side-head { padding: 13px 15px 10px; display: flex; align-items: center; justify-content: space-between; color: var(--deep); font-size: 17px; font-weight: 800; border-bottom: 1px solid #b4d1e8; }
+  .side-head small { color: #4c6f8d; font-size: 12px; font-weight: 400; }
+  .question-list { flex: 0 0 auto; max-height: 31vh; overflow: auto; padding: 7px 8px; }
+  .question-item { width: 100%; text-align: left; display: flex; align-items: center; gap: 7px; padding: 8px 9px; border: 1px solid transparent; border-radius: 2px; background: transparent; color: #315a78; }
+  .question-item:hover { background: rgba(255,255,255,.6); }
+  .question-item.active { color: #183f60; background: #c5e3f7; border-color: #8ebce1; font-weight: 800; }
+  .question-item .num { width: 23px; height: 23px; display: grid; place-items: center; border-radius: 3px; color: #fff; background: #76abd4; font-size: 12px; }
+  .question-item.active .num { background: #4d90c5; }
+  .question-item .qname { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .side-help { margin: 8px 12px 0; padding: 12px 12px 13px; color: #f00000; background: rgba(255,255,255,.42); border: 1px solid #c8ddec; font-size: 13px; line-height: 1.75; }
+  .side-help strong { display: block; margin-bottom: 3px; }
+  .side-bottom { margin-top: auto; padding: 12px; }
+  .new-question, .new-workspace { width: 100%; color: #174d76; border: 1px solid #76a9d0; background: linear-gradient(#f6fbff, #c3e0f4); padding: 9px 10px; border-radius: 3px; font-weight: 700; }
+  .new-workspace { margin-bottom: 8px; color: #654600; border-color: #e1b22c; background: linear-gradient(#fff5be, #ffd665); }
+  .field-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .field-row .field-label { margin-bottom: 5px; }
+  .material-actions { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+  .color-picker { width: 30px; height: 28px; padding: 2px; border: 1px solid #a5bfd5; border-radius: 3px; background: #fff; cursor: pointer; }
+  .material-editor { overflow: auto; white-space: pre-wrap; word-break: break-word; cursor: text; }
+  .main { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--panel); }
+  .main-toolbar { flex: 0 0 49px; display: flex; align-items: center; gap: 8px; padding: 7px 13px; border-bottom: 1px solid #b4d1e8; background: #eef7fd; }
+  .main-toolbar .spacer { flex: 1; }
+  .save-state { color: #5d7990; font-size: 12px; }
+  .editor { min-height: 0; flex: 1; display: flex; flex-direction: column; }
+  .question-pane { flex: 0 0 60%; min-height: 190px; overflow: auto; padding: 12px 18px 14px; background: var(--soft); border-bottom: 0; }
+  .splitter { flex: 0 0 12px; display: grid; place-items: center; color: #4d7898; background: linear-gradient(#b7d6ee, #d7eaf8, #b7d6ee); border-top: 2px solid #8fb9de; border-bottom: 2px solid #8fb9de; cursor: row-resize; user-select: none; touch-action: none; }
+  .splitter span { padding: 0 9px; border: 1px solid #8fb9de; border-radius: 10px; background: #eef8ff; font-size: 11px; line-height: 17px; }
+  .question-pane #questionMaterial { min-height: 250px; }
+  .question-pane #questionRequirement { min-height: 48px; max-height: 105px; }
+  .field-label { display: block; color: #2d5b7e; font-size: 13px; font-weight: 800; margin: 0 0 5px; }
+  .title-input, .text-input, .sub-title-input { width: 100%; color: var(--text); outline: none; border: 1px solid #b6cee2; border-radius: 2px; background: rgba(255,255,255,.8); }
+  .title-input { padding: 8px 10px; font-size: 18px; font-weight: 800; }
+  .text-input { resize: vertical; min-height: 52px; line-height: 1.75; padding: 9px 10px; margin-bottom: 10px; }
+  .title-input:focus, .text-input:focus, .sub-title-input:focus, .answer-box:focus { border-color: #5d9ed2; box-shadow: 0 0 0 2px rgba(93,158,210,.13); }
+  .answer-pane { min-height: 0; flex: 1; display: flex; flex-direction: column; background: #f6fbff; }
+  .tabs { flex: 0 0 auto; display: flex; align-items: center; gap: 4px; overflow-x: auto; padding: 8px 12px 0; background: #e2eef8; border-bottom: 1px solid #b4d1e8; }
+  .tab { border: 1px solid #acc7de; border-bottom: 0; color: #2a5b7d; background: #f5fbff; padding: 7px 12px; border-radius: 4px 4px 0 0; white-space: nowrap; }
+  .tab.active { color: #654600; border-color: #e2ad00; background: var(--orange); font-weight: 800; }
+  .answer-head { flex: 0 0 auto; display: flex; align-items: center; gap: 9px; padding: 9px 13px 8px; background: #f6fbff; }
+  .sub-title-input { width: 180px; padding: 6px 8px; color: #5a4a12; background: #fff8d8; border-color: #e4c35d; font-weight: 800; }
+  .count { color: #ef0000; font-size: 13px; font-weight: 800; }
+  .answer-tools { margin-left: auto; display: flex; gap: 6px; }
+  .answer-box { min-height: 0; flex: 1; width: calc(100% - 26px); margin: 0 13px 13px; resize: none; padding: 13px; border: 1px solid #b7d1e4; outline: none; color: #333; background: white; line-height: 1.8; font-size: 16px; }
+  .empty { padding: 20px; color: #67839b; }
+  .dragging, .dragging * { cursor: row-resize !important; user-select: none !important; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0; pointer-events: none; padding: 9px 16px; border-radius: 4px; color: white; background: rgba(31,61,82,.92); transition: .2s ease; z-index: 10; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (max-width: 900px) {
+    .topbar { grid-template-columns: 230px 1fr; }
+    .top-actions { display: none; }
+    .workspace { grid-template-columns: 230px minmax(0,1fr); }
+  }
+  @media (max-width: 680px) {
+    body { overflow: auto; }
+    .app { min-height: 100vh; height: auto; }
+    .topbar { position: sticky; top: 0; z-index: 5; grid-template-columns: 1fr; height: auto; }
+    .brand { text-align: left; }
+    .workspace { grid-template-columns: 1fr; }
+    .sidebar { max-height: none; }
+    .question-list { max-height: 160px; }
+    .main { min-height: 800px; }
+  }
+</style>
+</head>
+<body>
+<div id="lockScreen" class="lock-screen">
+  <div class="lock-card">
+    <h2>法考主观题答题系统</h2>
+    <p>这是公开共享版，请输入访问密码后进入。</p>
+    <input id="accessPassword" class="lock-input" type="password" autocomplete="off" placeholder="请输入访问密码" />
+    <button id="unlockButton" class="unlock-btn">进入系统</button>
+    <div id="lockMessage" class="lock-message"></div>
+    <p class="lock-note">网址独立运行，不依赖当前对话。</p>
+  </div>
+</div>
+<div class="app">
+  <header class="topbar">
+    <div class="profile">
+      <div class="avatar">王</div>
+      <div class="profile-fields">
+        <input id="profileName" class="profile-input" aria-label="人员姓名" value="姓名：王大状" />
+        <input id="profileGender" class="profile-input" aria-label="性别" value="性别：男神" />
+      </div>
+    </div>
+    <div class="brand">
+      <h1>国家统一法律职业资格考试计算机化考试模拟答题系统</h1>
+      <p>法考主观题答题练习版</p>
+    </div>
+    <div class="top-actions">
+      <button class="top-btn primary" id="copyAllTop">复制全部答案</button>
+    </div>
+  </header>
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="side-head"><span>主观题</span><small>题目管理</small></div>
+      <div id="questionList" class="question-list"></div>
+      <div class="side-help">
+        <strong>答题说明：</strong>
+        题目、材料和小问标题均可直接编辑。<br>
+        每个小问答案独立保存，切换小问不会丢失。<br>
+        作答过程中系统会自动保存，最后可一键复制到 Word。
+      </div>
+      <div class="side-bottom"><button class="new-workspace" id="newWorkspace">＋ 新建独立答题空间</button><button class="new-question" id="newQuestion">＋ 新增题目</button></div>
+    </aside>
+    <main class="main">
+      <div class="main-toolbar">
+        <button class="tool-btn" id="copyQuestion">复制题目文本</button>
+        <button class="tool-btn" id="duplicateQuestion">复制当前题目</button>
+        <button class="tool-btn" id="deleteQuestion">删除当前题目</button>
+        <button class="tool-btn" id="addSubquestion">＋ 新增小问</button>
+        <button class="tool-btn" id="expandQuestion">题目区放大</button>
+        <button class="tool-btn" id="shrinkQuestion">题目区缩小</button>
+        <span class="spacer"></span><span id="saveState" class="save-state">已自动保存</span>
+      </div>
+      <section class="editor">
+        <section class="question-pane">
+          <div class="field-row"><label class="field-label" for="questionMaterial">题目材料</label><div class="material-actions"><input id="highlightColor" class="color-picker" type="color" value="#fff176" title="选择标注颜色" /><button class="tool-btn" id="highlightMaterial" type="button">标注选中文字</button></div></div>
+          <div id="questionMaterial" class="text-input material-editor" contenteditable="true" spellcheck="false" aria-label="题目材料"></div>
+          <label class="field-label" for="questionRequirement">问题 / 作答要求</label>
+          <textarea id="questionRequirement" class="text-input" spellcheck="false"></textarea>
+        </section>
+        <div id="splitter" class="splitter" title="拖动调整题目区与答题区大小"><span>↕ 拖动调整上下比例</span></div>
+        <section class="answer-pane">
+          <div id="tabs" class="tabs"></div>
+          <div class="answer-head">
+            <input id="subTitle" class="sub-title-input" aria-label="小问标题" />
+            <span id="count" class="count">已输入字数：0</span>
+            <div class="answer-tools"><button class="tool-btn" id="copyCurrent">复制本问</button><button class="tool-btn" id="clearCurrent">清空本问</button></div>
+          </div>
+          <textarea id="answerBox" class="answer-box" spellcheck="false" placeholder="请在这里作答……"></textarea>
+        </section>
+      </section>
+    </main>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+(() => {
+  const LEGACY_KEY = 'faokao_answer_system_v1';
+  const WORKSPACE_POINTER = 'faokao_current_workspace_v2';
+  const uid = () => 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  const workspaceId = () => localStorage.getItem(WORKSPACE_POINTER) || 'default';
+  const storageKey = () => 'faokao_workspace_' + workspaceId();
+  const makeSub = (i) => ({ id: uid(), title: '问题' + i, answer: '' });
+  const makeQuestion = (n = 1, blank = false) => ({ id: uid(), title: '主观题' + n, material: blank ? '' : '请在这里编辑题目材料。你可以把完整案例、背景事实或题干粘贴到这里。', materialHtml: blank ? '' : '', requirement: blank ? '' : '请在这里编辑问题和作答要求。', subs: Array.from({ length: 8 }, (_, i) => makeSub(i + 1)) });
+  const blankState = () => {
+    const q = makeQuestion(1, true);
+    return { profile: { name: '姓名：王大状', gender: '性别：男神' }, questions: [q], activeQuestionId: q.id, activeSubId: q.subs[0].id };
+  };
+  const loadState = () => {
+    let raw = localStorage.getItem(storageKey());
+    if (!raw && workspaceId() === 'default') raw = localStorage.getItem(LEGACY_KEY);
+    try {
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (parsed && Array.isArray(parsed.questions) && parsed.questions.length) return parsed;
+    } catch {}
+    return blankState();
+  };
+  let state = loadState();
+  if (!state.profile) state.profile = { name: '姓名：王大状', gender: '性别：男神' };
+  if (!state.activeQuestionId) state.activeQuestionId = state.questions[0].id;
+  const activeQuestion = () => state.questions.find(q => q.id === state.activeQuestionId) || state.questions[0];
+  const activeSub = () => activeQuestion().subs.find(s => s.id === state.activeSubId) || activeQuestion().subs[0];
+  state.activeQuestionId = activeQuestion().id;
+  state.activeSubId = activeSub().id;
+
+  const $ = (id) => document.getElementById(id);
+  const ACCESS_PASSWORD = '王子琪宇宙最帅';
+  const unlock = () => {
+    if ($('accessPassword').value === ACCESS_PASSWORD) {
+      localStorage.setItem('faokao_public_unlock', '1');
+      document.body.classList.add('unlocked');
+      $('lockMessage').textContent = '';
+      $('accessPassword').value = '';
+    } else {
+      $('lockMessage').textContent = '密码不正确，请重新输入。';
+      $('accessPassword').select();
+    }
+  };
+  if (localStorage.getItem('faokao_public_unlock') === '1') document.body.classList.add('unlocked');
+  $('unlockButton').addEventListener('click', unlock);
+  $('accessPassword').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+  const save = () => { localStorage.setItem(storageKey(), JSON.stringify(state)); $('saveState').textContent = '已自动保存 ' + new Date().toLocaleTimeString(); };
+  let toastTimer;
+  const toast = (msg) => { const el = $('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 1800); };
+  const htmlToText = (html) => { const el = document.createElement('div'); el.innerHTML = html || ''; return el.innerText || el.textContent || ''; };
+  const textToHtml = (text) => String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+  const plainMaterial = (q) => q.materialHtml != null ? htmlToText(q.materialHtml) : (q.material || '');
+  const qText = (q, withAnswers = true) => {
+    let out = [q.title, '', plainMaterial(q), '', q.requirement || ''];
+    if (withAnswers) q.subs.forEach((s, i) => out.push('', s.title, s.answer || '（未作答）'));
+    return out.join('\n');
+  };
+  const copy = async (text, ok = '已复制，可直接粘贴到 Word') => { try { await navigator.clipboard.writeText(text); toast(ok); } catch { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast(ok); } };
+
+  function renderList() {
+    const box = $('questionList'); box.innerHTML = '';
+    state.questions.forEach((q, i) => {
+      const b = document.createElement('button'); b.className = 'question-item' + (q.id === state.activeQuestionId ? ' active' : '');
+      b.innerHTML = '<span class="num">' + (i + 1) + '</span><span class="qname"></span>';
+      b.querySelector('.qname').textContent = q.title || '未命名题目';
+      b.addEventListener('click', () => { state.activeQuestionId = q.id; state.activeSubId = q.subs[0].id; save(); render(); });
+      box.appendChild(b);
+    });
+  }
+  function renderTabs() {
+    const q = activeQuestion(); const box = $('tabs'); box.innerHTML = '';
+    q.subs.forEach((s, i) => { const b = document.createElement('button'); b.className = 'tab' + (s.id === state.activeSubId ? ' active' : ''); b.textContent = s.title || ('问题' + (i + 1)); b.addEventListener('click', () => { state.activeSubId = s.id; save(); renderAnswer(); renderTabs(); }); box.appendChild(b); });
+  }
+  function renderQuestion() {
+    const q = activeQuestion(); const material = $('questionMaterial'); material.innerHTML = q.materialHtml != null ? q.materialHtml : textToHtml(q.material || ''); $('questionRequirement').value = q.requirement || ''; savedMaterialRange = null;
+  }
+  function renderAnswer() {
+    const s = activeSub(); $('subTitle').value = s.title; $('answerBox').value = s.answer; $('count').textContent = '已输入字数：' + s.answer.length; $('answerBox').focus({ preventScroll: true });
+  }
+  function render() { renderList(); renderQuestion(); renderTabs(); renderAnswer(); }
+
+  $('profileName').value = state.profile?.name || '姓名：王大状'; $('profileGender').value = state.profile?.gender || '性别：男神';
+  $('profileName').addEventListener('input', e => { state.profile.name = e.target.value; save(); });
+  $('profileGender').addEventListener('input', e => { state.profile.gender = e.target.value; save(); });
+  $('newWorkspace').addEventListener('click', () => {
+    if (!confirm('确定新建一个独立答题空间吗？当前空间会保留在本浏览器中，但界面将切换到空白空间。')) return;
+    localStorage.setItem(WORKSPACE_POINTER, uid());
+    state = blankState();
+    save(); render(); toast('已新建独立答题空间');
+  });
+  let savedMaterialRange = null;
+  const materialEditor = $('questionMaterial');
+  const rememberMaterialSelection = () => {
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return;
+    const range = selection.getRangeAt(0);
+    if (materialEditor.contains(range.commonAncestorContainer)) savedMaterialRange = range.cloneRange();
+  };
+  document.addEventListener('selectionchange', rememberMaterialSelection);
+  ['mouseup', 'keyup', 'touchend'].forEach(type => materialEditor.addEventListener(type, rememberMaterialSelection));
+  materialEditor.addEventListener('input', e => { const q = activeQuestion(); q.materialHtml = e.currentTarget.innerHTML; q.material = htmlToText(q.materialHtml); save(); });
+  $('highlightMaterial').addEventListener('mousedown', e => e.preventDefault());
+  $('highlightMaterial').addEventListener('click', () => {
+    if (!savedMaterialRange || savedMaterialRange.collapsed) return toast('请先在题目材料中选中一段文字');
+    const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(savedMaterialRange);
+    materialEditor.focus();
+    const color = $('highlightColor').value || '#fff176';
+    document.execCommand('hiliteColor', false, color) || document.execCommand('backColor', false, color);
+    const q = activeQuestion(); q.materialHtml = materialEditor.innerHTML; q.material = htmlToText(q.materialHtml); save(); toast('已给选中文字标色');
+  });
+  $('questionRequirement').addEventListener('input', e => { activeQuestion().requirement = e.target.value; save(); });
+  $('subTitle').addEventListener('input', e => { activeSub().title = e.target.value; save(); renderTabs(); renderList(); });
+  $('answerBox').addEventListener('input', e => { activeSub().answer = e.target.value; $('count').textContent = '已输入字数：' + e.target.value.length; save(); });
+  $('newQuestion').addEventListener('click', () => { const q = makeQuestion(state.questions.length + 1); state.questions.push(q); state.activeQuestionId = q.id; state.activeSubId = q.subs[0].id; save(); render(); toast('已新增题目'); });
+  $('duplicateQuestion').addEventListener('click', () => { const q = activeQuestion(); const clone = JSON.parse(JSON.stringify(q)); clone.id = uid(); clone.title = (q.title || '主观题') + '（副本）'; clone.subs = clone.subs.map(s => ({ ...s, id: uid() })); state.questions.splice(state.questions.findIndex(x => x.id === q.id) + 1, 0, clone); state.activeQuestionId = clone.id; state.activeSubId = clone.subs[0].id; save(); render(); toast('已复制当前题目'); });
+  $('deleteQuestion').addEventListener('click', () => { if (state.questions.length === 1) return toast('至少保留一道题目'); if (!confirm('确定删除当前题目吗？')) return; const idx = state.questions.findIndex(q => q.id === state.activeQuestionId); state.questions.splice(idx, 1); state.activeQuestionId = state.questions[Math.max(0, idx - 1)].id; state.activeSubId = state.questions.find(q => q.id === state.activeQuestionId).subs[0].id; save(); render(); toast('已删除题目'); });
+  $('addSubquestion').addEventListener('click', () => { const q = activeQuestion(); const s = makeSub(q.subs.length + 1); q.subs.push(s); state.activeSubId = s.id; save(); renderTabs(); renderAnswer(); toast('已新增小问'); });
+  $('copyAllTop').addEventListener('click', () => copy(state.questions.map((q, i) => '【题目' + (i + 1) + '】\n' + qText(q)).join('\n\n')));
+  $('copyQuestion').addEventListener('click', () => copy(qText(activeQuestion(), true)));
+  $('copyCurrent').addEventListener('click', () => copy(activeSub().title + '\n' + activeSub().answer, '已复制本问答案'));
+  $('clearCurrent').addEventListener('click', () => { if (!activeSub().answer || confirm('确定清空本问答案吗？')) { activeSub().answer = ''; save(); renderAnswer(); toast('本问已清空'); } });
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); save(); toast('已保存'); } if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'c') { e.preventDefault(); copy(qText(activeQuestion(), true)); } });
+  const editor = document.querySelector('.editor');
+  const questionPane = document.querySelector('.question-pane');
+  const splitter = $('splitter');
+  let dragging = false;
+  const setQuestionHeight = (px) => { const rect = editor.getBoundingClientRect(); const min = 175; const max = Math.max(min, rect.height - 250); const h = Math.max(min, Math.min(max, px)); questionPane.style.flexBasis = h + 'px'; };
+  splitter.addEventListener('pointerdown', e => { dragging = true; document.body.classList.add('dragging'); splitter.setPointerCapture?.(e.pointerId); });
+  splitter.addEventListener('pointermove', e => { if (dragging) setQuestionHeight(e.clientY - editor.getBoundingClientRect().top); });
+  splitter.addEventListener('pointerup', () => { dragging = false; document.body.classList.remove('dragging'); });
+  splitter.addEventListener('pointercancel', () => { dragging = false; document.body.classList.remove('dragging'); });
+  const nudgeQuestion = (delta) => setQuestionHeight(questionPane.getBoundingClientRect().height + delta);
+  $('expandQuestion').addEventListener('click', () => nudgeQuestion(80));
+  $('shrinkQuestion').addEventListener('click', () => nudgeQuestion(-80));
+  render(); save();
+})();
+</script>
+</body>
+</html>
