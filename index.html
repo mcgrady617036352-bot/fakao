@@ -98,6 +98,71 @@
   .dragging, .dragging * { cursor: row-resize !important; user-select: none !important; }
   .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0; pointer-events: none; padding: 9px 16px; border-radius: 4px; color: white; background: rgba(31,61,82,.92); transition: .2s ease; z-index: 10; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .law-overlay { position: fixed; inset: 0; z-index: 20; display: none; flex-direction: column; color: #333; background: #fff; }
+  .law-overlay.open { display: flex; }
+  .law-overlay.compact { inset: 18px auto auto 18px; width: min(680px, calc(100vw - 36px)); height: min(560px, calc(100vh - 36px)); min-width: 420px; min-height: 300px; resize: both; overflow: hidden; border: 1px solid #b8b8b8; border-radius: 2px; box-shadow: 0 10px 34px rgba(0,0,0,.24); }
+  .law-top { flex: 0 0 52px; display: flex; align-items: center; gap: 12px; padding: 8px 15px; color: #3a3a3a; background: #f7f7f7; border-bottom: 1px solid #d4d4d4; user-select: none; }
+  .law-overlay.compact .law-top { cursor: move; touch-action: none; }
+  .law-overlay.compact .law-top button { cursor: pointer; }
+  .law-top h2 { margin: 0; font-size: 18px; letter-spacing: .02em; font-weight: 700; }
+  .law-top small { color: #777; font-size: 12px; }
+  .law-top .spacer { flex: 1; }
+  .law-close { border: 1px solid #bdbdbd; border-radius: 2px; padding: 6px 11px; color: #444; background: #fff; font-weight: 600; }
+  .law-close:hover { background: #ededed; }
+  .law-layout { min-height: 0; flex: 1; display: grid; grid-template-columns: minmax(300px, 23vw) minmax(0, 1fr); }
+  .law-overlay.compact .law-layout { grid-template-columns: 248px minmax(0, 1fr); }
+  .law-overlay.compact .law-top small { display: none; }
+  .law-sidebar { min-height: 0; display: flex; flex-direction: column; background: #fafafa; border-right: 1px solid #d7d7d7; }
+  .law-search { display: flex; gap: 6px; padding: 11px 11px 8px; border-bottom: 1px solid #b4d1e8; }
+  .law-search input { min-width: 0; flex: 1; padding: 8px 9px; border: 1px solid #9fc7e8; border-radius: 3px; outline: none; background: white; }
+  .law-search input:focus { border-color: #4d90c5; box-shadow: 0 0 0 2px rgba(77,144,197,.14); }
+  .law-search button { border: 1px solid #76a9d0; border-radius: 3px; color: #174d76; background: linear-gradient(#fff, #d9edf9); padding: 7px 10px; }
+  .law-categories { display: none; flex-wrap: wrap; gap: 5px; padding: 8px 10px; border-bottom: 1px solid #dedede; }
+  .law-cat { border: 1px solid #c7c7c7; border-radius: 2px; padding: 6px 8px; color: #4b4b4b; background: #fff; font-size: 12px; }
+  .law-cat.active { color: #222; border-color: #929292; background: #e9e9e9; font-weight: 800; }
+  .law-tree { min-height: 0; flex: 1; overflow: auto; padding: 8px 10px 16px 9px; background: #fff; }
+  .law-tree-head { padding: 8px 10px 9px; color: #444; font-weight: 800; }
+  .law-tree-node { position: relative; margin: 0; }
+  .law-tree-node .law-tree-node { margin-left: 20px; border-left: 1px dotted #c9c9c9; }
+  .law-tree-row { min-height: 27px; display: flex; align-items: flex-start; position: relative; }
+  .law-tree-row::before { content: ''; position: absolute; left: -1px; top: 13px; width: 11px; border-top: 1px dotted #c9c9c9; }
+  .law-tree-node > .law-tree-row::before { display: none; }
+  .law-expander { flex: 0 0 15px; width: 15px; height: 15px; margin: 5px 4px 0 0; padding: 0; border: 1px solid #a9a9a9; border-radius: 1px; color: #666; background: #fff; font: 12px/13px Arial, sans-serif; cursor: pointer; }
+  .law-expander.leaf { border-color: transparent; color: #b7b7b7; cursor: default; }
+  .law-tree-label { min-width: 0; flex: 1; display: block; padding: 3px 5px 4px 0; border: 0; color: #555; background: transparent; text-align: left; font-size: 15px; line-height: 1.45; white-space: normal; word-break: break-word; cursor: pointer; }
+  .law-tree-node.root > .law-tree-row .law-tree-label { color: #333; font-weight: 700; font-size: 16px; }
+  .law-tree-label:hover, .law-tree-label.active { color: #1e4f79; background: #eaf4fb; }
+  .law-tree-children { display: block; }
+  .law-tree-node.collapsed > .law-tree-children { display: none; }
+  .law-tree-search-result { width: 100%; display: block; margin: 2px 0; padding: 7px 8px; border: 1px solid transparent; border-radius: 2px; color: #555; background: transparent; text-align: left; line-height: 1.5; font-size: 15px; cursor: pointer; }
+  .law-tree-search-result:hover { border-color: #cfcfcf; background: #e9e9e9; color: #222; }
+  .law-tree-empty { padding: 14px 8px; color: #777; line-height: 1.65; }
+  .law-main { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: #fff; }
+  .law-main-head { flex: 0 0 auto; padding: 15px 36px 4px; border-bottom: 0; background: #fff; text-align: center; }
+  .law-path { color: #888; font-size: 12px; text-align: left; }
+  .law-main-head h3 { margin: 5px 0 0; color: #333; font-size: 20px; line-height: 1.5; }
+  .law-content { min-height: 0; flex: 1; overflow: auto; padding: 9px 58px 36px; background: white; }
+  .law-welcome { max-width: 760px; margin: 34px auto; padding: 28px 30px; border: 1px solid #ddd; background: #fafafa; color: #555; line-height: 1.85; }
+  .law-welcome h3 { margin: 0 0 10px; color: #333; }
+  .law-block { max-width: 1220px; margin: 0 auto; }
+  .law-section-heading { scroll-margin-top: 10px; margin: 20px 0 12px; padding: 5px 0; color: #333; background: transparent; border: 0; text-align: center; font-weight: 800; font-size: 19px; line-height: 1.6; }
+  .law-section-heading.level-chapter { background: transparent; border: 0; font-size: 19px; }
+  .law-section-heading.level-part { background: transparent; border: 0; font-size: 20px; }
+  .law-section-heading.level-section { font-size: 18px; }
+  .law-section-heading.level-sub { background: transparent; border: 0; color: #333; font-size: 17px; }
+  .law-line { min-height: 1.9em; white-space: pre-wrap; word-break: break-word; line-height: 1.9; color: #444; font-size: 17px; margin: 0 0 8px; }
+  .law-line.article { text-indent: 2em; }
+  .law-line.continuation { text-indent: 0; }
+  .law-line.target-line { background: #fffbe5; outline: 2px solid #ffe27d; outline-offset: 1px; }
+  .law-line mark, .law-section-heading mark { padding: 0 1px; background: #fff176; color: inherit; }
+  .law-result-count { color: #5e7890; font-size: 12px; }
+  @media (max-width: 760px) {
+    .law-layout { grid-template-columns: 1fr; grid-template-rows: 42% 58%; }
+    .law-sidebar { border-right: 0; border-bottom: 1px solid #b4d1e8; }
+    .law-tree { padding-bottom: 8px; }
+    .law-overlay.compact { inset: 10px; width: auto; height: calc(100vh - 20px); min-width: 0; }
+    .law-overlay.compact .law-layout { grid-template-columns: 1fr; grid-template-rows: 42% 58%; }
+  }
   @media (max-width: 900px) {
     .topbar { grid-template-columns: 230px 1fr; }
     .top-actions { display: none; }
@@ -140,6 +205,7 @@
       <p>法考主观题答题练习版</p>
     </div>
     <div class="top-actions">
+      <button class="top-btn" id="openLawPanel">法条检索</button>
       <button class="top-btn primary" id="copyAllTop">复制全部答案</button>
     </div>
   </header>
@@ -186,7 +252,33 @@
     </main>
   </div>
 </div>
+<section id="lawOverlay" class="law-overlay" aria-label="法律法规汇编">
+  <div class="law-top">
+    <h2>法律法规汇编</h2>
+    <small>民法 · 行政法与行政诉讼法 · 民诉与仲裁 · 刑诉 · 商法</small>
+    <span class="spacer"></span>
+    <button id="toggleLawSize" class="law-close" type="button">缩小窗口</button>
+    <button id="closeLawPanel" class="law-close">返回答题</button>
+  </div>
+  <div class="law-layout">
+    <aside class="law-sidebar">
+      <div class="law-search">
+        <input id="lawSearchInput" type="search" placeholder="输入法律名称或第X章定位" autocomplete="off" />
+        <button id="lawSearchButton" type="button">搜索</button>
+      </div>
+      <div id="lawCategories" class="law-categories"></div>
+      <div id="lawTree" class="law-tree"></div>
+    </aside>
+    <main class="law-main">
+      <div class="law-main-head"><div id="lawPath" class="law-path">法条定位</div><h3 id="lawHeading">请选择左侧目录或搜索关键词</h3></div>
+      <div id="lawContent" class="law-content">
+        <div class="law-welcome"><h3>法条定位</h3><div>左侧选择法考科目，或者在搜索框输入法律名称、章节、节名、条号或关键词。点击搜索结果后，系统会直接展开并定位到对应的章、节和条文。</div></div>
+      </div>
+    </main>
+  </div>
+</section>
 <div id="toast" class="toast"></div>
+<script src="law-data.js"></script>
 <script>
 (() => {
   const LEGACY_KEY = 'faokao_answer_system_v1';
@@ -321,6 +413,391 @@
   const nudgeQuestion = (delta) => setQuestionHeight(questionPane.getBoundingClientRect().height + delta);
   $('expandQuestion').addEventListener('click', () => nudgeQuestion(80));
   $('shrinkQuestion').addEventListener('click', () => nudgeQuestion(-80));
+
+  // 法条定位：法条正文从静态数据文件加载，答案与法条浏览互不影响。
+  const lawData = window.LAW_DATA || { categories: [] };
+  const lawState = { categoryId: lawData.categories[0]?.id || '', query: '', indexes: null, selected: null, expandedNodes: null };
+  const lawDigits = '一二三四五六七八九十百千万零〇两';
+  const lawPrefix = /^(中华人民共和国|最高人民法院|最高人民检察院|人民检察院|公安机关|国务院|全国人民代表大会常务委员会)/;
+  const lawEscape = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const lawNormalize = (s) => String(s || '').toLowerCase().replace(/\s+/g, '');
+  const lawHighlight = (s, query) => {
+    const safe = lawEscape(s);
+    const q = String(query || '').trim();
+    if (!q) return safe;
+    const escaped = lawEscape(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (!escaped) return safe;
+    return safe.replace(new RegExp(escaped, 'gi'), m => '<mark>' + m + '</mark>');
+  };
+  const lawHeadingFromLine = (line) => {
+    const s = String(line || '').trim();
+    const num = '[' + lawDigits + ']+';
+    let m = s.match(new RegExp('(?:^|\\s)(第' + num + '编)\\s*([^第]{0,80}?)(?=\\s+第' + num + '章|\\s+第' + num + '条|$)'));
+    if (m) return { kind: '编', level: 'part', title: (m[1] + ' ' + m[2]).trim() };
+    m = s.match(new RegExp('(?:^|\\s)(第' + num + '分编)\\s*([^第]{0,80}?)(?=\\s+第' + num + '章|\\s+第' + num + '条|$)'));
+    if (m) return { kind: '分编', level: 'volume', title: (m[1] + ' ' + m[2]).trim() };
+    m = s.match(new RegExp('(?:^|\\s)(第' + num + '章)\\s*([^第]{0,80}?)(?=\\s+第' + num + '节|\\s+第' + num + '条|$)'));
+    if (m) return { kind: '章', level: 'chapter', title: (m[1] + ' ' + m[2]).trim() };
+    m = s.match(new RegExp('(?:^|\\s)(第' + num + '节)\\s*([^第]{0,80}?)(?=\\s+第' + num + '条|$)'));
+    if (m) return { kind: '节', level: 'section', title: (m[1] + ' ' + m[2]).trim() };
+    m = s.match(new RegExp('^([' + lawDigits + ']{1,8}、)\\s*([^第]{1,70})(?=\\s+第' + num + '条|$)'));
+    if (m && s.length < 100) return { kind: '目', level: 'sub', title: (m[1] + ' ' + m[2]).trim() };
+    return null;
+  };
+  const lawTitleFromLine = (line) => {
+    const s = String(line || '').trim();
+    if (!s || s.length > 420 || !lawPrefix.test(s)) return '';
+    if (/^第[一二三四五六七八九十百千万零〇两]+条/.test(s)) return '';
+    if (/^(中华人民共和国)(领域|境内|公民|有关|依法|国家|人民|各级|本法)/.test(s)) return '';
+    if (/^(最高人民法院|最高人民检察院|人民检察院|公安机关|国务院)/.test(s) && !/(关于|解释|规定|办法|通知|意见|规则|条例|法典|法$|仲裁|破产)/.test(s)) return '';
+    if (!/(法典|法律|法规|条例|规则|解释|规定|办法|通知|意见|仲裁|破产|关于|法(?:\s|（|\(|$))/.test(s)) return '';
+    return s.replace(/\s+/g, ' ');
+  };
+  const lawHeadingDepth = (level) => ({ part: 1, volume: 2, chapter: 3, section: 4, sub: 5 }[level] || 6);
+  const buildHeadingTree = (headings) => {
+    const roots = [];
+    const stack = [];
+    headings.forEach(h => {
+      const node = { type: 'heading', id: h.id, title: h.title, data: h, children: [] };
+      const depth = lawHeadingDepth(h.level);
+      while (stack.length && stack[stack.length - 1].depth >= depth) stack.pop();
+      (stack.length ? stack[stack.length - 1].node.children : roots).push(node);
+      stack.push({ depth, node });
+    });
+    return roots;
+  };
+  const lawCatalogs = {"civil":[{"line":0,"title":"中华人民共和国民法典"},{"line":2804,"title":"最高人民法院关于适用《中华人民共和国民法典》有关担保制度的解释"},{"line":3247,"title":"最高人民法院关于审理民事案件适用诉讼时效制度若干问题的规定"},{"line":3325,"title":"最高人民法院关于适用《中华人民共和国民法典》总则编若干问题的解释"},{"line":3482,"title":"最高人民法院关于适用《中华人民共和国民法典》合同编通则若干问题的解释"},{"line":3985,"title":"最高人民法院关于适用《中华人民共和国民法典》物权编的解释（一）"},{"line":4053,"title":"最高人民法院关于适用《中华人民共和国民法典》婚姻家庭编的解释（一）"},{"line":4319,"title":"最高人民法院关于适用《中华人民共和国民法典》婚姻家庭编的解释（二）"},{"line":4444,"title":"最高人民法院关于适用《中华人民共和国民法典》继承编的解释（一）"},{"line":4542,"title":"最高人民法院关于适用《中华人民共和国民法典》侵权责任编的解释（一）"},{"line":4660,"title":"最高人民法院关于审理买卖合同纠纷案件适用法律问题的解释"},{"line":4798,"title":"最高人民法院关于适用《中华人民共和国民法典》时间效力的若干规定"},{"line":4877,"title":"最高人民法院关于审理建筑物区分所有权纠纷案件适用法律若干问题的解释"},{"line":4957,"title":"最高人民法院关于审理商品房买卖合同纠纷案件适用法律若干问题的解释"},{"line":5051,"title":"最高人民法院关于审理建设工程施工合同纠纷案件适用法律问题的解释（一）"},{"line":5202,"title":"最高人民法院关于审理技术合同纠纷案件适用法律若干问题的解释"},{"line":5446,"title":"最高人民法院关于审理城镇房屋租赁合同纠纷案件具体应用法律若干问题的解释"},{"line":5507,"title":"最高人民法院关于审理融资租赁合同纠纷案件适用法律问题的解释"},{"line":5570,"title":"最高人民法院关于审理民间借贷案件适用法律若干问题的规定"},{"line":5715,"title":"最高人民法院关于确定民事侵权精神损害赔偿责任若干问题的解释"},{"line":5734,"title":"最高人民法院关于审理人身损害赔偿案件适用法律若干问题的解释"},{"line":5830,"title":"最高人民法院关于审理利用信息网络侵害人身权益民事纠纷案件适用法律若干问题的规定"},{"line":5902,"title":"最高人民法院关于审理道路交通事故损害赔偿案件适用法律若干问题的解释"},{"line":6008,"title":"中华人民共和国个人信息保护法"}],"admin":[{"line":0,"title":"中华人民共和国公务员法"},{"line":378,"title":"国务院行政机构设置和编制管理条例"},{"line":473,"title":"地方各级人民政府机构设置和编制管理条例"},{"line":567,"title":"中华人民共和国立法法"},{"line":1029,"title":"行政法规制定程序条例"},{"line":1172,"title":"规章制定程序条例"},{"line":1334,"title":"中华人民共和国行政许可法"},{"line":1662,"title":"最高人民法院关于审理行政许可案件若干问题的规定"},{"line":1719,"title":"中华人民共和国行政处罚法"},{"line":2026,"title":"中华人民共和国治安管理处罚法"},{"line":2633,"title":"中华人民共和国行政强制法"},{"line":2907,"title":"中华人民共和国行政复议法"},{"line":3281,"title":"中华人民共和国行政复议法实施条例"},{"line":3516,"title":"中华人民共和国政府信息公开条例"},{"line":3733,"title":"最高人民法院关于审理政府信息公开行政案件适用法律若干问题的解释"},{"line":3827,"title":"中华人民共和国行政诉讼法"},{"line":4180,"title":"最高人民法院关于适用《中华人民共和国行政诉讼法》的解释"},{"line":4920,"title":"最高人民法院关于行政诉讼证据若干问题的规定"},{"line":5211,"title":"最高人民法院关于审理国际贸易行政案件若干问题的规定"},{"line":5252,"title":"最高人民法院关于审理反倾销行政案件应用法律若干问题的规定"},{"line":5290,"title":"最高人民法院关于审理反补贴行政案件应用法律若干问题的规定"},{"line":5328,"title":"关于审理行政案件适用法律规范问题的座谈会纪要"},{"line":5456,"title":"最高人民法院关于行政诉讼撤诉若干问题的规定"},{"line":5487,"title":"最高人民法院关于审理行政协议案件若干问题的规定"},{"line":5588,"title":"中华人民共和国国家赔偿法"},{"line":5785,"title":"最高人民法院关于人民法院赔偿委员会审理国家赔偿案件程序的规定"},{"line":5868,"title":"最高人民法院关于人民法院赔偿委员会适用质证程序审理国家赔偿案件的规定"},{"line":5956,"title":"最高人民法院关于人民法院执行《中华人民共和国国家赔偿法》几个问题的解释"},{"line":5990,"title":"最高人民法院关于适用《中华人民共和国国家赔偿法》若干问题的解释（一）"},{"line":6033,"title":"最高人民法院关于审理行政赔偿案件若干问题的规定"},{"line":6186,"title":"最高人民法院关于审理民事、行政诉讼中司法赔偿案件适用法律若干问题的解释"},{"line":6284,"title":"最高人民法院、最高人民检察院关于办理刑事赔偿案件适用法律若干问题的解释"},{"line":6397,"title":"最高人民法院关于审理国家赔偿案件确定精神损害赔偿责任适用法律若干问题的解释"},{"line":6448,"title":"最高人民法院关于正确确定县级以上地方人民政府行政诉讼被告资格若干问题的规定"},{"line":6491,"title":"最高人民法院关于审理司法赔偿案件适用请求时效制度若干问题的解释"}],"civil-proc":[{"line":0,"title":"中华人民共和国民事诉讼法"},{"line":1028,"title":"最高人民法院关于适用《中华人民共和国民事诉讼法》的解释"},{"line":2809,"title":"最高人民法院关于互联网法院审理案件若干问题的规定"},{"line":2924,"title":"最高人民法院关于审理民事级别管辖异议案件若干问题的规定"},{"line":2951,"title":"最高人民法院关于民事诉讼证据的若干规定"},{"line":3317,"title":"最高人民法院关于在审理经济纠纷案件中涉及经济犯罪嫌疑若干问题的规定"},{"line":3379,"title":"中华人民共和国人民调解法"},{"line":3482,"title":"最高人民法院关于人民法院民事调解工作若干问题的规定"},{"line":3539,"title":"最高人民法院关于适用简易程序审理民事案件的若干规定"},{"line":3680,"title":"最高人民法院关于适用《中华人民共和国民事诉讼法》审判监督程序若干问题的解释"},{"line":3760,"title":"最高人民法院关于适用《中华人民共和国民事诉讼法》执行程序若干问题的解释"},{"line":3847,"title":"最高人民法院关于人民法院民事执行中查封、扣押、冻结财产的规定"},{"line":3967,"title":"最高人民法院关于人民法院民事执行中拍卖、变卖财产的规定"},{"line":4084,"title":"最高人民法院关于民事执行中变更、追加当事人若干问题的规定"},{"line":4201,"title":"最高人民法院关于人民法院办理执行异议和复议案件若干问题的规定"},{"line":4361,"title":"最高人民法院关于执行和解若干问题的规定"},{"line":4417,"title":"最高人民法院关于人民法院执行工作若干问题的规定（试行）"},{"line":4690,"title":"中华人民共和国仲裁法"},{"line":4963,"title":"最高人民法院关于适用《中华人民共和国仲裁法》若干问题的解释"}],"criminal-proc":[{"line":0,"title":"中华人民共和国刑事诉讼法"},{"line":1143,"title":"最高人民法院关于适用《中华人民共和国刑事诉讼法》的解释"},{"line":3745,"title":"最高人民法院关于进一步加强合议庭职责的若干规定"},{"line":3794,"title":"最高人民法院关于办理死刑复核案件听取辩护律师意见的办法"},{"line":3823,"title":"最高人民法院关于死刑复核及执行程序中保障当事人合法权益的若干规定"},{"line":3857,"title":"最高人民法院关于死刑缓期执行限制减刑案件审理程序若干问题的规定"},{"line":3887,"title":"最高人民法院关于刑事裁判涉财产部分执行的若干规定"},{"line":3953,"title":"最高人民法院关于刑事再审案件开庭审理程序的具体规定（试行）"},{"line":4057,"title":"最高人民法院《关于建立健全防范刑事冤假错案工作机制的意见》"},{"line":4129,"title":"最高人民法院关于减刑、假释案件审理程序的规定"},{"line":4220,"title":"最高人民法院关于审理人民检察院按照审判监督程序提出的刑事抗诉案件若干问题的规定"},{"line":4261,"title":"人民检察院刑事诉讼规则"},{"line":7207,"title":"人民检察院办理减刑、假释案件规定"},{"line":7283,"title":"人民检察院办理未成年人刑事案件的规定"},{"line":7659,"title":"人民检察院、公安机关羁押必要性审查、评估工作规定"},{"line":7825,"title":"公安机关办理刑事案件程序规定"},{"line":9312,"title":"最高人民法院、最高人民检察院、公安部、国家安全部、司法部、全国人大常委会法制工作委员会关于实施刑事诉讼法若干问题的规定"},{"line":9534,"title":"最高人民法院、最高人民检察院、公安部、国家安全部、司法部印发《关于适用认罪认罚从宽制度的指导意见》的通知"},{"line":9897,"title":"最高人民法院、最高人民检察院、公安部、国家安全部、司法部《关于依法保障律师执业权利的规定》"},{"line":10111,"title":"最高人民法院、最高人民检察院、公安部、国家安全部、司法部《关于办理刑事案件严格排除非法证据若干问题的规定》"},{"line":10263,"title":"最高人民法院、最高人民检察院、公安部关于办理刑事案件收集提取和审查判断电子数据若干问题的规定"},{"line":10416,"title":"最高人民法院、最高人民检察院、公安部、国家安全部、司法部关于规范量刑程序若干问题的意见"},{"line":10526,"title":"最高人民法院、最高人民检察院、公安部、国家安全部、司法部办理刑事案件排除非法证据规程"},{"line":10694,"title":"最高人民法院、最高人民检察院、公安部、国家安全部、司法部办理刑事案件庭前会议规程"},{"line":10809,"title":"最高人民法院、最高人民检察院、中国海警局关于海上刑事案件管辖等有关问题的通知"},{"line":10857,"title":"最高人民法院、最高人民检察院关于适用犯罪嫌疑人、被告人逃匿、死亡案件违法所得没收程序若干问题的规定"},{"line":11013,"title":"最高人民法院、司法部关于为死刑复核案件被告人依法提供法律援助的规定（试行）"},{"line":11048,"title":"最高人民法院、最高人民检察院、公安部、国家安全部关于取保候审若干问题的规定"},{"line":11249,"title":"中华人民共和国人民陪审员法"},{"line":11338,"title":"最高人民法院关于适用《中华人民共和国人民陪审员法》若干问题的解释"},{"line":11387,"title":"中华人民共和国社区矫正法"},{"line":11618,"title":"法律援助值班律师工作办法"},{"line":11762,"title":"最高人民法院、最高人民检察院、公安部关于办理信息网络犯罪案件适用刑事诉讼程序若干问题的意见"},{"line":11884,"title":"全国人民代表大会常务委员会关于《中华人民共和国刑事诉讼法》第七十九条第三款的解释"},{"line":11895,"title":"全国人民代表大会常务委员会关于《中华人民共和国刑事诉讼法》第二百五十四条第五款、第二百五十七条第二款的解释"},{"line":11910,"title":"全国人民代表大会常务委员会关于《中华人民共和国刑事诉讼法》第二百七十一条第二款的解释"},{"line":11923,"title":"全国人民代表大会常务委员会关于《中华人民共和国刑事诉讼法》第二百九十二条的解释"}],"commercial":[{"line":0,"title":"中华人民共和国公司法"},{"line":923,"title":"最高人民法院关于适用《中华人民共和国公司法》若干问题的规定（一）"},{"line":942,"title":"最高人民法院关于适用《中华人民共和国公司法》若干问题的规定（二）"},{"line":1058,"title":"最高人民法院关于适用《中华人民共和国公司法》若干问题的规定（三）"},{"line":1197,"title":"最高人民法院关于适用《中华人民共和国公司法》若干问题的规定（四）"},{"line":1303,"title":"最高人民法院关于适用《中华人民共和国公司法》若干问题的规定（五）"},{"line":1337,"title":"中华人民共和国合伙企业法"},{"line":1632,"title":"中华人民共和国个人独资企业法"},{"line":1758,"title":"中华人民共和国外商投资法"},{"line":1896,"title":"中华人民共和国企业破产法"},{"line":2346,"title":"最高人民法院关于适用《中华人民共和国企业破产法》若干问题的规定（一）"},{"line":2387,"title":"最高人民法院关于适用《中华人民共和国企业破产法》若干问题的规定（二）"},{"line":2609,"title":"最高人民法院关于适用《中华人民共和国企业破产法》若干问题的规定（三）"}]};
+  const lawCatalogSkips = { admin: [[570, 575], [2029, 2034]] };
+  const buildLawIndexes = () => {
+    if (lawState.indexes) return lawState.indexes;
+    const indexes = {};
+    (lawData.categories || []).forEach(cat => {
+      const lines = String(cat.text || '').split('\n');
+      const catalog = lawCatalogs[cat.id] || [];
+      const docs = catalog.length
+        ? catalog.map((entry, i) => ({ id: cat.id + '-doc-' + i, line: entry.line, title: entry.title }))
+        : [];
+      const docAtLine = new Map(docs.map(d => [d.line, d]));
+      const headings = [];
+      let path = { part: '', volume: '', chapter: '', section: '', sub: '' };
+      let currentDoc = '';
+      const skipRanges = lawCatalogSkips[cat.id] || [];
+      lines.forEach((raw, line) => {
+        const text = raw.trim();
+        if (docAtLine.has(line)) { currentDoc = docAtLine.get(line).title; path = { part: '', volume: '', chapter: '', section: '', sub: '' }; }
+        if (!text || skipRanges.some(([a,b]) => line >= a && line < b)) return;
+        const h = lawHeadingFromLine(text);
+        if (h) {
+          if (h.level === 'part') path = { part: h.title, volume: '', chapter: '', section: '', sub: '' };
+          if (h.level === 'volume') path = { ...path, volume: h.title, chapter: '', section: '', sub: '' };
+          if (h.level === 'chapter') path = { ...path, chapter: h.title, section: '', sub: '' };
+          if (h.level === 'section') path = { ...path, section: h.title, sub: '' };
+          if (h.level === 'sub') path = { ...path, sub: h.title };
+          headings.push({ id: cat.id + '-h-' + headings.length, line, ...h, doc: currentDoc, path: { ...path } });
+        }
+      });
+      if (!docs.length) {
+        lines.forEach((raw, line) => {
+          const text = raw.trim();
+          const title = lawTitleFromLine(text);
+          if (title && (line === 0 || lines[line - 1].trim() === '' || /[）)]\s*$/.test(lines[line - 1].trim()))) {
+            if (!docs.some(d => d.line === line)) docs.push({ id: cat.id + '-doc-' + docs.length, line, title });
+          }
+        });
+      }
+      docs.sort((a,b) => a.line - b.line);
+      docs.forEach((doc, i) => {
+        doc.endLine = docs[i + 1]?.line ?? lines.length;
+        doc.headings = headings.filter(h => h.line > doc.line && h.line < doc.endLine);
+        doc.children = buildHeadingTree(doc.headings);
+      });
+      indexes[cat.id] = { lines, headings, docs };
+    });
+    lawState.indexes = indexes;
+    return indexes;
+  };
+  const lawNearestHeading = (idx, line) => {
+    let found = null;
+    for (const h of idx.headings) { if (h.line > line) break; found = h; }
+    return found;
+  };
+  const lawDocForLine = (idx, line) => idx.docs.find(d => line >= d.line && line < d.endLine) || null;
+  const lawRange = (idx, line, limitLine = idx.lines.length) => {
+    const h = lawNearestHeading(idx, line);
+    const start = h && h.line >= line ? h.line : Math.max(0, line - 12);
+    let end = Math.min(limitLine, idx.lines.length, start + 220);
+    if (h) {
+      const next = idx.headings.find(x => x.line > h.line && (
+        x.level === h.level ||
+        x.level === 'part' ||
+        (h.level === 'volume' && x.level === 'part')
+      ));
+      if (next) end = Math.min(end, next.line);
+    }
+    if (end <= start) end = Math.min(limitLine, idx.lines.length, start + 80);
+    return { start, end, heading: h };
+  };
+  const renderLawCategories = () => {
+    const box = $('lawCategories'); if (!box) return;
+    box.innerHTML = '';
+    (lawData.categories || []).forEach(cat => {
+      const b = document.createElement('button'); b.className = 'law-cat' + (cat.id === lawState.categoryId ? ' active' : ''); b.textContent = cat.name;
+      b.addEventListener('click', () => {
+        lawState.categoryId = cat.id; lawState.query = ''; $('lawSearchInput').value = ''; lawState.selected = null;
+        lawState.expandedNodes?.add(cat.id); renderLawCategories(); renderLawTree(); renderLawWelcome();
+      });
+      box.appendChild(b);
+    });
+  };
+  const renderLawWelcome = () => {
+    const cat = (lawData.categories || []).find(c => c.id === lawState.categoryId) || lawData.categories[0];
+    if (!cat) return;
+    $('lawPath').textContent = cat.name + ' · 目录';
+    $('lawHeading').textContent = '请选择法律、司法解释或章，点击左侧方框展开目录';
+    $('lawContent').innerHTML = '<div class="law-welcome"><h3>' + lawEscape(cat.name) + '</h3><div>左侧按“学科 → 法律/司法解释 → 编、章、节、目”分层显示。搜索框只定位法律名称或章，不搜索条文内容。</div></div>';
+  };
+  const lawNodeForDoc = (cat, idx, doc) => ({ type: 'doc', id: doc.id, title: doc.title, line: doc.line, data: doc, cat, idx, children: doc.children || [] });
+  const lawNodeForCategory = (cat, idx) => ({ type: 'category', id: cat.id, title: cat.name, data: cat, cat, idx, children: idx.docs.map(doc => lawNodeForDoc(cat, idx, doc)) });
+  const renderLawNode = (node, depth = 0, parentCat = null, parentIdx = null) => {
+    const nodeCat = node.cat || parentCat;
+    const nodeIdx = node.idx || parentIdx;
+    const hasChildren = node.children && node.children.length > 0;
+    const expanded = lawState.expandedNodes.has(node.id);
+    const wrap = document.createElement('div');
+    wrap.className = 'law-tree-node' + (node.type === 'category' ? ' root' : '') + (!expanded && hasChildren ? ' collapsed' : '');
+    const row = document.createElement('div'); row.className = 'law-tree-row';
+    const toggle = document.createElement('button');
+    toggle.type = 'button'; toggle.className = 'law-expander' + (hasChildren ? '' : ' leaf'); toggle.textContent = hasChildren ? (expanded ? '−' : '+') : '·';
+    toggle.setAttribute('aria-label', hasChildren ? (expanded ? '收起 ' : '展开 ') + node.title : node.title);
+    toggle.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!hasChildren) return;
+      lawState.expandedNodes.has(node.id) ? lawState.expandedNodes.delete(node.id) : lawState.expandedNodes.add(node.id);
+      renderLawTree();
+    });
+    const label = document.createElement('button'); label.type = 'button'; label.className = 'law-tree-label' + (lawState.selected === node.id ? ' active' : '');
+    label.dataset.lawType = node.type; label.dataset.lawId = node.id;
+    label.textContent = node.title;
+    label.addEventListener('click', () => {
+      if (node.type === 'category') {
+        lawState.categoryId = node.cat.id; lawState.selected = null; lawState.expandedNodes.add(node.id); renderLawCategories(); renderLawTree(); renderLawWelcome();
+      } else if (node.type === 'doc') {
+        showLawDocument(nodeCat, nodeIdx, node.data);
+      } else {
+        showLawSection(nodeCat, nodeIdx, node.data);
+      }
+    });
+    row.append(toggle, label); wrap.appendChild(row);
+    if (hasChildren) {
+      const childBox = document.createElement('div'); childBox.className = 'law-tree-children';
+      node.children.forEach(child => childBox.appendChild(renderLawNode(child, depth + 1, nodeCat, nodeIdx)));
+      wrap.appendChild(childBox);
+    }
+    return wrap;
+  };
+  const renderLawTree = () => {
+    const box = $('lawTree'); box.innerHTML = '';
+    const indexes = buildLawIndexes();
+    if (!lawState.expandedNodes) lawState.expandedNodes = new Set((lawData.categories || []).slice(0, 1).map(cat => cat.id));
+    const query = lawState.query.trim();
+    if (query) {
+      const q = lawNormalize(query); const results = []; const seen = new Set();
+      (lawData.categories || []).forEach(cat => {
+        const idx = indexes[cat.id];
+        idx.docs.forEach(doc => {
+          if (lawNormalize(doc.title).includes(q) && !seen.has(doc.id)) { seen.add(doc.id); results.push({ type: 'doc', cat, idx, doc }); }
+        });
+        idx.headings.filter(h => h.level === 'part' || h.level === 'chapter').forEach(h => {
+          if (lawNormalize(h.title).includes(q) && !seen.has(h.id)) { seen.add(h.id); results.push({ type: 'heading', cat, idx, heading: h, doc: lawDocForLine(idx, h.line) }); }
+        });
+      });
+      const head = document.createElement('div'); head.className = 'law-tree-head'; head.textContent = '定位结果（仅法律名称和章）'; box.appendChild(head);
+      results.slice(0, 160).forEach(r => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'law-tree-search-result';
+        b.textContent = r.type === 'doc' ? r.cat.name + ' · ' + r.doc.title : r.cat.name + ' · ' + (r.doc?.title || '') + ' · ' + r.heading.title;
+        b.addEventListener('click', () => r.type === 'doc' ? showLawDocument(r.cat, r.idx, r.doc) : showLawSection(r.cat, r.idx, r.heading));
+        box.appendChild(b);
+      });
+      if (!results.length) box.innerHTML += '<div class="law-tree-empty">未找到对应法律名称或章标题。</div>';
+      return;
+    }
+    const roots = (lawData.categories || []).map(cat => lawNodeForCategory(cat, indexes[cat.id]));
+    roots.forEach(node => box.appendChild(renderLawNode(node)));
+  };
+  const renderLawLines = (cat, idx, start, end, targetLine, query) => {
+    const headingByLine = new Map(idx.headings.map(h => [h.line, h]));
+    const rows = [];
+    let pending = '';
+    let pendingStart = null;
+    let pendingEnd = null;
+    let pendingArticle = false;
+    let pendingTarget = false;
+    let targetAnchor = null;
+    const articleRe = /(?:^|\s)(第[一二三四五六七八九十百千万零〇两]+\s*条)\s*/g;
+    const flush = () => {
+      if (!pending.trim()) return;
+      const anchor = pendingStart == null ? start : pendingStart;
+      const classes = 'law-line ' + (pendingArticle ? 'article ' : 'continuation ') + (pendingTarget ? 'target-line' : '');
+      rows.push('<p id="law-line-' + anchor + '" class="' + classes.trim() + '">' + lawHighlight(pending.trim(), query) + '</p>');
+      if (pendingTarget) targetAnchor = 'law-line-' + anchor;
+      pending = ''; pendingStart = null; pendingEnd = null; pendingArticle = false; pendingTarget = false;
+    };
+    const appendContinuation = (value, lineNo, lineEnd = lineNo) => {
+      if (!value) return;
+      pending = pending ? pending + ' ' + value : value;
+      if (pendingStart == null) pendingStart = lineNo;
+      pendingEnd = lineEnd;
+      pendingTarget = pendingTarget || (targetLine != null && targetLine >= pendingStart && targetLine <= lineEnd);
+    };
+    const addText = (text, lineNo, lineEnd = lineNo) => {
+      const value = String(text || '').trim();
+      if (!value) return;
+      const splitNumber = pending.match(/(?:^|\s)(第[一二三四五六七八九十百千万零〇两]+)\s*$/);
+      if (splitNumber && /^(?:[一二三四五六七八九十百千万零〇两]+\s*)?条(?:\s|$)/.test(value)) {
+        const articlePrefix = splitNumber[1];
+        const before = pending.slice(0, splitNumber.index).trim();
+        if (before) {
+          pending = before;
+          flush();
+        }
+        pending = articlePrefix + value;
+        pendingArticle = true;
+        if (pendingStart == null) pendingStart = lineNo;
+        pendingEnd = lineEnd;
+        pendingTarget = pendingTarget || (targetLine != null && targetLine >= pendingStart && targetLine <= lineEnd);
+        return;
+      }
+      const matches = Array.from(value.matchAll(articleRe));
+      if (!matches.length) {
+        appendContinuation(value, lineNo, lineEnd);
+        return;
+      }
+      const prefix = value.slice(0, matches[0].index).trim();
+      if (prefix) appendContinuation(prefix, lineNo, lineEnd);
+      if (pending.trim()) flush();
+      matches.forEach((match, index) => {
+        const contentStart = match.index + match[0].length;
+        const contentEnd = index + 1 < matches.length ? matches[index + 1].index : value.length;
+        const article = (match[1].replace(/\s+/g, '') + ' ' + value.slice(contentStart, contentEnd)).trim();
+        if (!article) return;
+        pending = article; pendingStart = lineNo; pendingEnd = lineEnd; pendingArticle = true;
+        pendingTarget = targetLine != null && targetLine >= lineNo && targetLine <= lineEnd;
+        if (index + 1 < matches.length) flush();
+      });
+    };
+    const headingPrefix = (text, h) => {
+      const num = '[' + lawDigits + ']+';
+      let re;
+      if (h.level === 'part') re = new RegExp('^第' + num + '编\\s*[^第]{0,100}?(?=\\s+第' + num + '章|\\s+第' + num + '条|$)');
+      else if (h.level === 'volume') re = new RegExp('^第' + num + '分编\\s*[^第]{0,100}?(?=\\s+第' + num + '章|\\s+第' + num + '条|$)');
+      else if (h.level === 'chapter') re = new RegExp('^第' + num + '章\\s*[^第]{0,100}?(?=\\s+第' + num + '节|\\s+第' + num + '条|$)');
+      else if (h.level === 'section') re = new RegExp('^第' + num + '节\\s*[^第]{0,100}?(?=\\s+第' + num + '条|$)');
+      else re = new RegExp('^[' + lawDigits + ']{1,8}、\\s*[^第]{1,100}?(?=\\s+第' + num + '条|$)');
+      const m = text.match(re);
+      return m ? m[0].trim() : h.title;
+    };
+    const displayLines = [];
+    for (let i = start; i < end; i++) {
+      let text = (idx.lines[i] || '').trim();
+      let lineEnd = i;
+      while (text && new RegExp('第[' + lawDigits + ']*$').test(text) && lineEnd + 1 < end) {
+        const next = (idx.lines[lineEnd + 1] || '').trim();
+        if (!new RegExp('^(?:[' + lawDigits + ']+)?条(?:\\s|$)').test(next)) break;
+        text += next;
+        lineEnd++;
+      }
+      displayLines.push({ line: i, lineEnd, text });
+      i = lineEnd;
+    }
+    for (const item of displayLines) {
+      const i = item.line; const trimmed = item.text; const h = headingByLine.get(i);
+      if (!trimmed) { flush(); continue; }
+      if (h) {
+        flush();
+        const prefix = headingPrefix(trimmed, h);
+        if (i !== start) rows.push('<div id="law-line-' + i + '" class="law-section-heading level-' + h.level + '">' + lawHighlight(prefix, query) + '</div>');
+        const rest = trimmed.slice(prefix.length).trim();
+        if (rest) addText(rest, i, item.lineEnd);
+      } else addText(trimmed, i, item.lineEnd);
+    }
+    flush();
+    $('lawContent').innerHTML = '<div class="law-block">' + rows.join('') + '</div>';
+    const target = $(targetAnchor || ('law-line-' + (targetLine == null ? start : targetLine)));
+    if (target) setTimeout(() => target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 0);
+  };
+  function showLawDocument(cat, idx, doc) {
+    lawState.categoryId = cat.id; lawState.selected = doc.id;
+    if (!lawState.expandedNodes) lawState.expandedNodes = new Set();
+    lawState.expandedNodes.add(cat.id); lawState.expandedNodes.add(doc.id);
+    $('lawPath').textContent = cat.name + ' · 法律/司法解释';
+    $('lawHeading').textContent = doc.title;
+    renderLawLines(cat, idx, doc.line, doc.endLine, doc.line, '');
+    renderLawCategories(); renderLawTree();
+  }
+  function showLawSection(cat, idx, h) {
+    lawState.categoryId = cat.id; lawState.selected = h.id;
+    if (!lawState.expandedNodes) lawState.expandedNodes = new Set();
+    const doc = lawDocForLine(idx, h.line);
+    lawState.expandedNodes.add(cat.id); if (doc) lawState.expandedNodes.add(doc.id);
+    const r = lawRange(idx, h.line, doc ? doc.endLine : idx.lines.length);
+    const hp = h.path || {};
+    $('lawPath').textContent = cat.name + ' · ' + (hp.part || '') + (hp.volume ? ' · ' + hp.volume : '') + (hp.chapter ? ' · ' + hp.chapter : '') + (hp.section ? ' · ' + hp.section : '');
+    $('lawHeading').textContent = h.title;
+    renderLawLines(cat, idx, r.start, r.end, h.line, '');
+    renderLawCategories(); renderLawTree();
+  }
+  function showLawResult(r) {
+    lawState.categoryId = r.cat.id; lawState.selected = r.heading?.id || null;
+    const range = lawRange(r.idx, r.line);
+    const path = r.heading ? r.heading.title : (r.doc ? r.doc.title : r.cat.name);
+    $('lawPath').textContent = r.cat.name + ' · ' + path;
+    $('lawHeading').textContent = r.heading ? r.heading.title : (r.doc ? r.doc.title : '搜索定位');
+    renderLawLines(r.cat, r.idx, range.start, range.end, r.line, lawState.query);
+    renderLawCategories(); renderLawTree();
+  }
+  const runLawSearch = () => { lawState.query = $('lawSearchInput').value.trim(); renderLawTree(); if (lawState.query) { $('lawPath').textContent = '目录定位 · ' + lawState.query; $('lawHeading').textContent = '请选择法律名称或章标题'; $('lawContent').innerHTML = '<div class="law-welcome"><h3>目录定位</h3><div>搜索仅匹配法律、司法解释完整标题和编、章标题，不搜索条文内容。</div></div>'; } else renderLawWelcome(); };
+  $('openLawPanel').addEventListener('click', () => { $('lawOverlay').classList.add('open'); renderLawCategories(); renderLawTree(); renderLawWelcome(); });
+  const lawPanel = $('lawOverlay');
+  const lawTop = lawPanel.querySelector('.law-top');
+  let lawDrag = null;
+  const clampLawPanel = (left, top) => {
+    const rect = lawPanel.getBoundingClientRect();
+    const margin = 8;
+    return {
+      left: Math.max(margin, Math.min(left, window.innerWidth - rect.width - margin)),
+      top: Math.max(margin, Math.min(top, window.innerHeight - rect.height - margin))
+    };
+  };
+  lawTop.addEventListener('pointerdown', e => {
+    if (!lawPanel.classList.contains('compact') || e.button !== 0 || e.target.closest('button,input,textarea,select,a')) return;
+    const rect = lawPanel.getBoundingClientRect();
+    lawPanel.style.left = rect.left + 'px'; lawPanel.style.top = rect.top + 'px'; lawPanel.style.right = 'auto'; lawPanel.style.bottom = 'auto';
+    lawDrag = { id: e.pointerId, dx: e.clientX - rect.left, dy: e.clientY - rect.top };
+    lawTop.setPointerCapture?.(e.pointerId); lawPanel.classList.add('law-dragging'); e.preventDefault();
+  });
+  lawTop.addEventListener('pointermove', e => {
+    if (!lawDrag || e.pointerId !== lawDrag.id) return;
+    const next = clampLawPanel(e.clientX - lawDrag.dx, e.clientY - lawDrag.dy);
+    lawPanel.style.left = next.left + 'px'; lawPanel.style.top = next.top + 'px';
+  });
+  const endLawDrag = e => { if (lawDrag && (!e || e.pointerId === lawDrag.id)) { lawDrag = null; lawPanel.classList.remove('law-dragging'); } };
+  lawTop.addEventListener('pointerup', endLawDrag); lawTop.addEventListener('pointercancel', endLawDrag);
+  $('toggleLawSize').addEventListener('click', () => {
+    const panel = lawPanel;
+    const compact = panel.classList.toggle('compact');
+    if (compact) {
+      const rect = panel.getBoundingClientRect();
+      panel.style.left = rect.left + 'px'; panel.style.top = rect.top + 'px'; panel.style.right = 'auto'; panel.style.bottom = 'auto';
+    } else {
+      panel.style.left = ''; panel.style.top = ''; panel.style.right = ''; panel.style.bottom = '';
+    }
+    $('toggleLawSize').textContent = compact ? '恢复全屏' : '缩小窗口';
+  });
+  $('closeLawPanel').addEventListener('click', () => $('lawOverlay').classList.remove('open'));
+  $('lawSearchButton').addEventListener('click', runLawSearch);
+  $('lawSearchInput').addEventListener('keydown', e => { if (e.key === 'Enter') runLawSearch(); });
+  $('lawSearchInput').addEventListener('input', () => { if (!$('lawSearchInput').value.trim()) { lawState.query = ''; renderLawTree(); renderLawWelcome(); } });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('lawOverlay').classList.contains('open')) $('lawOverlay').classList.remove('open'); });
   render(); save();
 })();
 </script>
