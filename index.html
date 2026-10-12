@@ -219,6 +219,12 @@
     .app.side-by-side .editor { flex: 1; }
     .top-actions { display: flex; }
   }
+
+  .grader-result{display:none;margin-top:8px;padding:9px 12px;border:1px solid #b7d1e6;border-radius:4px;background:#f6fbff;color:#173f5d}.grader-result.visible{display:block}.grader-points{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.grader-points span{font-size:12px;padding:3px 6px;border-radius:3px;background:#e7f1f8}.grader-modal{display:none;position:fixed;inset:0;z-index:30;background:rgba(12,26,38,.55);align-items:center;justify-content:center}.grader-modal.open{display:flex}.grader-dialog{width:min(820px,92vw);max-height:88vh;overflow:auto;padding:18px;border-radius:8px;background:#fff;box-shadow:0 15px 50px #102d44}.grader-dialog-head{display:flex;align-items:center;justify-content:space-between}.grader-dialog p{font-size:13px;color:#526473;line-height:1.55}.grader-textarea{display:block;width:100%;min-height:150px;box-sizing:border-box;margin:8px 0;padding:10px;border:1px solid #b6ccdc;border-radius:4px;font:13px/1.5 Consolas,monospace}.grader-dialog-actions{display:flex;gap:8px;justify-content:flex-end}.tool-btn.primary{background:#1d638f;color:#fff;border-color:#1d638f}
+
+  .answer-review{display:none;flex:1;min-height:260px;overflow:auto;padding:14px 16px;border:1px solid #9dbed8;background:#fff;color:#24323c;font-size:var(--answer-font,16px);line-height:1.8;white-space:pre-wrap;word-break:break-word}.answer-review.visible{display:block}.answer-review .scoring-hit{background:#b8d9ff;color:#07569b;border-bottom:2px solid #2b83d0;border-radius:2px;padding:0 1px}.answer-review-note{font-size:12px;color:#526473;margin:0 0 6px}
+
+  .answer-dialog{width:min(1120px,94vw);max-height:88vh;overflow:auto;padding:18px;border-radius:8px;background:#fff;box-shadow:0 15px 50px #102d44}.answer-dialog-note{font-size:13px;color:#526473;line-height:1.55}.answer-columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}.answer-columns article{min-width:0;border:1px solid #b7d1e6;border-radius:5px;background:#f8fcff;padding:12px}.answer-columns h3{margin:0 0 8px;color:#1b5d8b;font-size:16px}.answer-reference{white-space:pre-wrap;word-break:break-word;line-height:1.8;font-size:15px;color:#24323c}@media(max-width:800px){.answer-columns{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -246,12 +252,12 @@
     </div>
     <div class="top-actions">
       <button class="top-btn" id="openLawPanel">法条检索</button>
-      <button class="top-btn primary" id="copyAllTop">复制全部答案</button>
+      <button class="top-btn primary" id="copyAllTop">复制全部答案</button><button class="top-btn" id="generatePrompt">生成批改提示词</button><button class="top-btn" id="importGrading">导入批改 JSON</button><button class="top-btn" id="localGrade">本题内预批改</button><button class="top-btn" id="answerCompareBtn">对照答案</button>
     </div>
   </header>
   <div class="workspace">
     <aside class="sidebar">
-      <div class="side-head"><span>主观题</span><small>题目管理</small></div>
+      <div class="side-head"><span>柏浪涛十题</span><small>刑法主观题</small></div>
       <div id="questionList" class="question-list"></div>
       <div class="side-help">
         <strong>答题说明：</strong>
@@ -292,12 +298,15 @@
             <span id="count" class="count">已输入字数：0</span>
             <div class="answer-tools"><button class="tool-btn" id="copyCurrent">复制本问</button><button class="tool-btn" id="clearCurrent">清空本问</button></div>
           </div>
-          <textarea id="answerBox" class="answer-box" spellcheck="false" placeholder="请在这里作答……"></textarea>
+          <textarea id="answerBox" class="answer-box" spellcheck="false" placeholder="请在这里作答……"></textarea><div id="answerReview" class="answer-review" aria-live="polite"></div>
+          <div id="graderResult" class="grader-result" aria-live="polite"></div>
         </section>
       </section>
     </main>
   </div>
 </div>
+<section id="answerCompareModal" class="grader-modal"><div class="answer-dialog"><div class="grader-dialog-head"><strong id="answerCompareTitle">答案对照</strong><button id="closeAnswerCompare" class="law-close">关闭</button></div><p class="answer-dialog-note">考生作答版用于考场快速作答；完整论述版用于理解规则、事实涵摄和观点理由。两栏内容均来自当前小问。</p><div class="answer-columns"><article><h3>考生作答版</h3><div id="examAnswerView" class="answer-reference"></div></article><article><h3>完整论述版</h3><div id="fullAnswerView" class="answer-reference"></div></article></div></div></section>
+<section id="graderModal" class="grader-modal"><div class="grader-dialog"><div class="grader-dialog-head"><strong>批改工作台</strong><button id="closeGrader" class="law-close">关闭</button></div><p>先把“生成的提示词”交给你使用的 AI；AI 返回 JSON 后粘贴到下框，系统会按每个采分点限幅并检查重复、未知编号。</p><textarea id="graderPrompt" class="grader-textarea" placeholder="提示词或批改 JSON"></textarea><textarea id="graderJson" class="grader-textarea" placeholder="把 AI 返回的 JSON 粘贴到这里"></textarea><div class="grader-dialog-actions"><button id="copyPrompt" class="tool-btn">复制提示词</button><button id="applyGrading" class="tool-btn primary">校验并显示得分</button></div></div></section>
 <section id="lawOverlay" class="law-overlay" aria-label="法律法规汇编">
   <div class="law-top">
     <h2>法律法规汇编</h2>
@@ -324,7 +333,7 @@
   </div>
 </section>
 <div id="toast" class="toast"></div>
-<script src="law-data.js"></script>
+<script src="law-data.js"></script><script src="ba-langtao-rubric.js"></script><script src="ba-langtao-questions.js"></script>
 <script>
 (() => {
   const LEGACY_KEY = 'faokao_answer_system_v1';
@@ -338,14 +347,32 @@
     const q = makeQuestion(1, true);
     return { profile: { name: '姓名：王大状', gender: '性别：男神' }, ui: { materialFont: 16, answerFont: 16, sideBySide: false }, questions: [q], activeQuestionId: q.id, activeSubId: q.subs[0].id };
   };
+  const embeddedState = () => {
+    const data = Array.isArray(window.BA_LANGTAO_QUESTIONS) ? window.BA_LANGTAO_QUESTIONS : [];
+    if (!data.length) return blankState();
+    const toHtml = text => String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+    const questions = data.map(item => ({
+      id: uid(), title: item.title, material: item.material, materialHtml: toHtml(item.material), requirement: item.requirement,
+      subs: (item.subtitles || []).map((title, i) => ({ id: uid(), title, answer: '' }))
+    }));
+    return { meta: { embeddedSet: 'ba-langtao-10-v1' }, profile: { name: '姓名：王大状', gender: '性别：男神' }, ui: { materialFont: 16, answerFont: 16, sideBySide: false }, questions, activeQuestionId: questions[0].id, activeSubId: questions[0].subs[0].id };
+  };
   const loadState = () => {
     let raw = localStorage.getItem(storageKey());
     if (!raw && workspaceId() === 'default') raw = localStorage.getItem(LEGACY_KEY);
     try {
       const parsed = raw ? JSON.parse(raw) : null;
-      if (parsed && Array.isArray(parsed.questions) && parsed.questions.length) return parsed;
+      if (parsed && Array.isArray(parsed.questions) && parsed.questions.length) {
+        const first = parsed.questions[0];
+        const untouchedBlank = parsed.questions.length === 1 && first && !first.material && !(first.subs || []).some(x => x.answer);
+        if (workspaceId() === 'default' && (untouchedBlank || parsed.meta?.embeddedSet !== 'ba-langtao-10-v1')) {
+          try { localStorage.setItem('faokao_previous_default_backup_v1', JSON.stringify(parsed)); } catch {}
+          return embeddedState();
+        }
+        return parsed;
+      }
     } catch {}
-    return blankState();
+    return embeddedState();
   };
   let state = loadState();
   if (!state.profile) state.profile = { name: '姓名：王大状', gender: '性别：男神' };
@@ -1002,6 +1029,6 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('lawOverlay').classList.contains('open')) $('lawOverlay').classList.remove('open'); });
   render(); save();
 })();
-</script>
+</script><script src="ba-langtao-grader-ui.js"></script>
 </body>
 </html>
